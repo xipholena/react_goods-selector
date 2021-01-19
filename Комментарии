@@ -4,9 +4,9 @@ export function Good({ good, goodSelected }) {
       <p>{good}</p>
       <button
         type="button"
-        className="goods__select"
+        className="goods__select"  
         onClick={(event) => {
-          goodSelected(event, good); // передача кастомного параметра обратно в функцию, полученную пропсом
+          goodSelected(event, good); // передача кастомного параметра обратно в метод родительскиого класса, полученный пропсом
         }}
       >
         Select
@@ -38,7 +38,7 @@ export class Goods extends React.Component {
     });
   }
 
-  selected = ({ target }, item) => { // получение переданного кастомного параметра good
+  selected = ({ target }, item) => { // получение переданного кастомного параметра good = item
     const allGoods = target.closest('.goods').children;
 
     [...allGoods].forEach((element) => {
@@ -53,11 +53,11 @@ export class Goods extends React.Component {
 
   render() {
     const { goods } = this.props;
-    const { selected } = this.state;
+    const { selected, activeItem, clearMode } = this.state;
 
     return (
-      <div className="App">
-        <div className="App__header-wrapper">
+      <div className="goods">
+        <div className="goods__header-wrapper">
           <h1>
             Selected good:
             {selected}
@@ -66,21 +66,23 @@ export class Goods extends React.Component {
             title="clear selection"
             type="button"
             className="goods__clear"
-            onClick={(event) => {
+            onClick={() => {
               this.setState({
                 selected: ' - ',
               });
-              this.clearAll(event);
+              this.clearAll();
             }}
           >
             Remove
           </button>
         </div>
-        <ul className="goods">
+        <ul className="goods__list">
           {goods.map(item => (
             <li
               key={item}
-              className="goods__item"
+              className={classNames('goods__item', { active: activeItem// поскольку оба компонента и так рендерятся при каждом клике
+                && activeItem.previousSibling.innerText === item
+                && !clearMode })} // поскольку до клика activeItem - undefined
             >
               <Good
                 good={item}
